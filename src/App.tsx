@@ -1,32 +1,41 @@
 import { useEffect, useRef, useState } from "react";
 import { startPhaser } from "./Game";
 import GameManager from "./global/game-manager";
+import GravitySelector from "./components/GravitySelector";
 
 function App() {
   const phaserRef = useRef<HTMLDivElement>(null);
 
   const gm = GameManager.getInstance();
   const [leaderboard, setLeaderboard] = useState(gm.getLeaderboard());
+  const [currScene, setCurrScene] = useState(gm.currScene);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setLeaderboard([...gm.getLeaderboard()]);
+      setCurrScene(gm.getCurrenScene());
     });
 
     if (phaserRef.current) {
       const game = startPhaser("gameCanvas");
 
       return () => {
+        clearInterval(interval);
         game.destroy(true);
       };
-      clearInterval(interval);
     }
   }, []);
 
   return (
-    <div className="flex justify-center gap-12 my-16">
+    <div className="flex flex-col lg:flex-row justify-center gap-12 my-16">
       {/* Game Canvas Wrapper */}
       <div className="border border-gray-700 drop-shadow-2xl rounded-md overflow-hidden">
+        {currScene}
+        {currScene === "scene-main-menu" ? (
+          <div className="absolute mx-12 translate-y-[10vh]">
+            <GravitySelector />
+          </div>
+        ) : null}
         <div
           id="gameCanvas"
           ref={phaserRef}

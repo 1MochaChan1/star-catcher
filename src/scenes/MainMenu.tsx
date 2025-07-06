@@ -11,6 +11,8 @@ export class MainMenu extends Phaser.Scene {
   }
 
   preload() {
+    GameManager.getInstance().setScene('scene-main-menu');
+
     this.load.image("sky", "/assets/day-clouds.PNG");
   }
 

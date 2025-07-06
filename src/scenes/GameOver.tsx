@@ -3,6 +3,7 @@ import GameManager from "../global/game-manager";
 export class GameOver extends Phaser.Scene {
   constructor() {
     super("scene-game-over");
+    GameManager.getInstance().setScene("scene-game-over");
   }
 
   preload() {

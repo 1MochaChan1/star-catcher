@@ -20,7 +20,6 @@ export class Gameplay extends Phaser.Scene {
 
   gm!: GameManager;
   public speed: number = 500.0;
-  public gravity: number = 120;
   // public spikeGravity: number = 60;
   private lives: number = 1;
   constructor() {
@@ -28,6 +27,8 @@ export class Gameplay extends Phaser.Scene {
   }
 
   preload() {
+    GameManager.getInstance().setScene("scene-game");
+
     // this.load.setBaseURL("https://labs.phaser.io");
     this.load.image("sky", "/assets/day-clouds.PNG");
     this.load.image("ground", "/assets/Ground-bg.png");
@@ -44,7 +45,7 @@ export class Gameplay extends Phaser.Scene {
 
   create() {
     this.gm = GameManager.getInstance();
-    this.physics.world.gravity.y = this.gravity;
+    this.physics.world.gravity.y = this.gm.gravity;
 
     const bg = this.add.image(this.scale.width / 2, 160, "sky");
     bg.scale = 0.25;
@@ -83,7 +84,7 @@ export class Gameplay extends Phaser.Scene {
         gmObj.setPosition(this.getRandomX(), 0);
         explosionSFX.play();
       },
-      this.gravity
+      this.gm.gravity
     );
 
     this.heartsGroup = this.spawnFallingGroup(
@@ -96,7 +97,7 @@ export class Gameplay extends Phaser.Scene {
         gmObj.setPosition(this.getRandomX(), this.scale.height + 10);
         heartSFX.play();
       },
-      this.gravity
+      this.gm.gravity
     );
 
     // INPUT
@@ -179,7 +180,7 @@ export class Gameplay extends Phaser.Scene {
       sprite.setPosition(this.getRandomX(), 0);
       sprite.setScale(scale);
       sprite.body.allowGravity = true;
-      sprite.body.setMaxVelocityY(gravity ?? this.gravity);
+      sprite.body.setMaxVelocityY(gravity ?? this.gm.gravity);
       this.physics.add.overlap(this.player, sprite, (_player, obj) => {
         onHit(obj as Phaser.GameObjects.GameObject);
         // sprite.setPosition(this.getRandomX(), 0);
@@ -204,7 +205,7 @@ export class Gameplay extends Phaser.Scene {
         sprite.setPosition(this.getRandomX(), 0);
       }
       sprite.body.setMaxVelocityY(
-        (this.gravity * (this.gm.currScore + 1)) / 10
+        (this.gm.gravity * (this.gm.currScore + 1)) / 10
       );
       return null;
     });

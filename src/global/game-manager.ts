@@ -8,8 +8,17 @@ export default class GameManager {
   public currentUserName: string = "";
   public currScore: number = 0;
   public players: Player[] = [];
-
+  public gravity: number = 120;
+  public currScene: string = "";
   private constructor() {}
+
+  setGravityFromLabel(label: "low" | "medium" | "high") {
+    const values = { low: 120, medium: 160, high: 180 };
+    this.gravity = values[label];
+  }
+  setScene(scene: "scene-game" | "scene-main-menu" | "scene-game-over") {
+    this.currScene = scene;
+  }
 
   public static getInstance(): GameManager {
     if (!GameManager.instance) {
@@ -38,6 +47,10 @@ export default class GameManager {
 
   getLeaderboard(): Player[] {
     return [...this.players].sort((a, b) => b.highestScore - a.highestScore);
+  }
+
+  getCurrenScene(): string {
+    return this.currScene;
   }
 
   getCurrentUser(): Player | undefined {
