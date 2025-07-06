@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  @apply h-screen;
+}
+
+#gameCanvas {
+  @apply border-blue-400 h-[50%] w-[50%];
+}
