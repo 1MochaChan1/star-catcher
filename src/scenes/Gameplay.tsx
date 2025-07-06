@@ -36,6 +36,10 @@ export class Gameplay extends Phaser.Scene {
     this.load.image("player", "/assets/player.png");
     this.load.image("spikes", "/assets/spikes.png");
     this.load.image("star", "/assets/star.png");
+
+    this.load.audio("heartSFX", "/assets/health.mp3");
+    this.load.audio("explosionSFX", "/assets/explosion.mp3");
+    this.load.audio("starSFX", "/assets/star.mp3");
   }
 
   create() {
@@ -44,6 +48,11 @@ export class Gameplay extends Phaser.Scene {
 
     const bg = this.add.image(this.scale.width / 2, 160, "sky");
     bg.scale = 0.25;
+
+    // SFX
+    const heartSFX = this.sound.add("heartSFX");
+    const explosionSFX = this.sound.add("explosionSFX");
+    const starSFX = this.sound.add("starSFX");
 
     // PLAYER
     this.player = this.physics.add.sprite(
@@ -61,6 +70,7 @@ export class Gameplay extends Phaser.Scene {
       this.gm.currScore += 1;
       this.gm.updateScore(this.gm.currentUserName, this.gm.currScore);
       gmObj.setPosition(this.getRandomX(), 0);
+      starSFX.play();
     });
 
     this.spikeGroup = this.spawnFallingGroup(
@@ -71,6 +81,7 @@ export class Gameplay extends Phaser.Scene {
         const gmObj = obj as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
         this.lives--;
         gmObj.setPosition(this.getRandomX(), 0);
+        explosionSFX.play();
       },
       this.gravity
     );
@@ -83,6 +94,7 @@ export class Gameplay extends Phaser.Scene {
         const gmObj = obj as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
         this.lives++;
         gmObj.setPosition(this.getRandomX(), this.scale.height + 10);
+        heartSFX.play();
       },
       this.gravity
     );
