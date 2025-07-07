@@ -3,15 +3,16 @@ import GameManager from "../global/game-manager";
 export class GameOver extends Phaser.Scene {
   constructor() {
     super("scene-game-over");
-    GameManager.getInstance().setScene("scene-game-over");
   }
 
   preload() {
     this.load.image("sky", "/assets/day-clouds.PNG");
   }
 
-  create() {
+  async create() {
     const gm = GameManager.getInstance();
+    gm.setScene("scene-game-over");
+    await gm.updateLeaderBoard();
     const { width, height } = this.scale;
 
     // Background
@@ -48,6 +49,8 @@ export class GameOver extends Phaser.Scene {
       .setInteractive();
 
     playAgainBtn.on("pointerdown", () => {
+      gm.currScore = 0;
+      gm.currHighestScore = 0;
       this.scene.start("scene-game");
     });
 
@@ -62,7 +65,8 @@ export class GameOver extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    menuBtn.on("pointerdown", () => {
+    menuBtn.on("pointerdown", async () => {
+      await gm.clear()
       this.scene.start("scene-main-menu");
     });
   }

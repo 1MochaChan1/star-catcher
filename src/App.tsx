@@ -2,17 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { startPhaser } from "./Game";
 import GameManager from "./global/game-manager";
 import GravitySelector from "./components/GravitySelector";
+import { LeaderboadComponent } from "./components/Leaderboard";
 
 function App() {
   const phaserRef = useRef<HTMLDivElement>(null);
 
   const gm = GameManager.getInstance();
-  const [leaderboard, setLeaderboard] = useState(gm.getLeaderboard());
   const [currScene, setCurrScene] = useState(gm.currScene);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setLeaderboard([...gm.getLeaderboard()]);
       setCurrScene(gm.getCurrenScene());
     });
 
@@ -44,18 +43,7 @@ function App() {
       </div>
 
       {/* Leaderboard Panel */}
-      <div className="w-[300px] h-[600px] bg-gray-900 text-white rounded-md p-6 shadow-lg flex flex-col">
-        <h2 className="text-xl font-semibold  text-yellow-200 mb-4">
-          🏆 Leaderboard
-        </h2>
-        <ul className="space-y-2 text-sm text-gray-200">
-          {leaderboard.map((player) => (
-            <li
-              key={player.name}
-            >{`${player.name} — ${player.highestScore}`}</li>
-          ))}
-        </ul>
-      </div>
+      <LeaderboadComponent />
     </div>
   );
 }

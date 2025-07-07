@@ -20,15 +20,13 @@ export class Gameplay extends Phaser.Scene {
 
   gm!: GameManager;
   public speed: number = 500.0;
-  // public spikeGravity: number = 60;
   private lives: number = 1;
+
   constructor() {
     super("scene-game");
   }
 
   preload() {
-    GameManager.getInstance().setScene("scene-game");
-
     // this.load.setBaseURL("https://labs.phaser.io");
     this.load.image("sky", "/assets/day-clouds.PNG");
     this.load.image("ground", "/assets/Ground-bg.png");
@@ -43,8 +41,11 @@ export class Gameplay extends Phaser.Scene {
     this.load.audio("starSFX", "/assets/star.mp3");
   }
 
-  create() {
+  async create() {
+    this.lives = 1;
     this.gm = GameManager.getInstance();
+    this.gm.setScene("scene-game");
+    this.gm.currScore = 0;
     this.physics.world.gravity.y = this.gm.gravity;
 
     const bg = this.add.image(this.scale.width / 2, 160, "sky");
@@ -68,8 +69,8 @@ export class Gameplay extends Phaser.Scene {
     // SPAWNABLES
     this.starGroup = this.spawnFallingGroup("star", 2, 0.15, (obj) => {
       const gmObj = obj as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-      this.gm.currScore += 1;
-      this.gm.updateScore(this.gm.currentUserName, this.gm.currScore);
+      this.gm.setTempScore(this.gm.currScore + 1);
+      this.gm.updateScore(this.gm.currScore + 1);
       gmObj.setPosition(this.getRandomX(), 0);
       starSFX.play();
     });
@@ -127,14 +128,16 @@ export class Gameplay extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.backButton.on("pointerdown", () => {
+    this.backButton.on("pointerdown", async () => {
+      await this.gm.clear();
       this.scene.start("scene-main-menu");
     });
   }
 
-  update(): void {
+  async update() {
     if (this.lives <= 0) {
       this.scene.start("scene-game-over");
+      return;
     }
 
     this.updateUI();
@@ -154,12 +157,6 @@ export class Gameplay extends Phaser.Scene {
 
   getRandomX() {
     return Math.floor(Math.random() * (this.scale.width - 100));
-  }
-
-  starCollect() {
-    this.star.setY(0);
-    this.star.setPosition(this.getRandomX(), 0);
-    this.gm.updateScore(this.gm.currentUserName, this.gm.currScore + 1);
   }
 
   spawnFallingGroup(

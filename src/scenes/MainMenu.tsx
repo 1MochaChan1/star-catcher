@@ -4,24 +4,26 @@ export class MainMenu extends Phaser.Scene {
   private nameInput!: HTMLInputElement;
   private startButton!: Phaser.GameObjects.Text;
   private submitButton!: Phaser.GameObjects.Text;
-  private playerName: string = "";
+
+  gm!: GameManager;
 
   constructor() {
     super("scene-main-menu");
   }
 
   preload() {
-    GameManager.getInstance().setScene('scene-main-menu');
-
     this.load.image("sky", "/assets/day-clouds.PNG");
+    this.gm = GameManager.getInstance();
   }
 
-  create() {
+  async create() {
+    this.gm.setScene("scene-main-menu");
+
     const { width, height } = this.scale;
 
     const bg = this.add.image(this.scale.width / 2, 160, "sky");
     bg.scale = 0.25;
-    bg.setAlpha(0.75)
+    bg.setAlpha(0.75);
 
     // Heading
     this.add
@@ -57,12 +59,11 @@ export class MainMenu extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.submitButton.on("pointerdown", () => {
+    this.submitButton.on("pointerdown", async () => {
       const name = this.nameInput.value.trim();
       if (name) {
-        const gm = GameManager.getInstance();
-        gm.setUser(name);
-        this.playerName = name;
+        await this.gm.setUser(name);
+        this.gm.getCurrentUser()!.name = name;
         this.startButton.setAlpha(1).setInteractive();
       }
     });
@@ -78,8 +79,9 @@ export class MainMenu extends Phaser.Scene {
       .setOrigin(0.5)
       .setAlpha(0.5);
 
-    this.startButton.on("pointerdown", () => {
-      if (this.playerName) {
+    this.startButton.on("pointerdown", async () => {
+      const user = this.gm.getCurrentUser();
+      if (user) {
         this.nameInput.remove(); // remove input from DOM
         this.scene.start("scene-game");
       }
